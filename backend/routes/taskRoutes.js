@@ -3,7 +3,7 @@ import { protect, adminOnly } from "../middlewares/authMiddleware.js";
 import {
   getDashboardData,
   getUserDashboardData,
-  getTask,
+  getTasks,
   getTaskById,
   createTask,
   deleteTask,
@@ -17,7 +17,7 @@ const router = express.Router();
 // TASK Management routes
 router.get("/dashboard-data", protect, getDashboardData);
 router.get("/user-dashboard-data", protect, getUserDashboardData);
-router.get("/", protect, getTask); //get all Task (Admin : all, user: assigned)
+router.get("/", protect, getTasks); //get all Task (Admin : all, user: assigned)
 router.get("/:id", protect, getTaskById); // Get Task by ID (Admin only)
 
 router.post("/", protect, adminOnly, createTask); // Create a Task (Admin only)
