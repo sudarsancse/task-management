@@ -26,7 +26,6 @@ export const getUserDashboardData = async (req, res) => {
 export const getTasks = async (req, res) => {
   try {
     const { status } = req.query;
-    console.log(status);
 
     let filter = {};
 
