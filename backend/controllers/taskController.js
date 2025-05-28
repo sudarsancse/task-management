@@ -5,6 +5,68 @@ import Task from "../models/Task.js";
 //@access           Private
 export const getDashboardData = async (req, res) => {
   try {
+    //Fetch statuslist
+    const totalTask = await Task.countDocuments();
+    const pendingTasks = await Task.countDocuments({ status: "Pending" });
+    const completedTasks = await Task.countDocuments({ status: "Completed" });
+    const overdueTasks = await Task.countDocuments({
+      status: { $ne: "Completed" },
+      deuDate: { $lt: new Date() },
+    });
+
+    // Ensure  all possible statuses are include
+    const taskStatuses = ["Pending", "In Progress", "Completed"];
+    const taskDistributionRaw = await Task.aggregate([
+      {
+        $group: {
+          _id: "$status",
+          count: { $sum: 1 },
+        },
+      },
+    ]);
+
+    const taskDistribution = taskStatuses.reduce((acc, status) => {
+      const formattedKey = status.replace(/\s+/g, ""); //Remove spaces for response keys
+      acc[formattedKey] =
+        taskDistributionRaw.find((item) => item._id === status)?.count || 0;
+      return acc;
+    }, {});
+    taskDistribution["All"] = totalTask; // Add total count to taskDistribution
+
+    //Ensure all priority lavels are included
+    const taskPriorities = ["Low", "Medium", "High"];
+    const taskPriorityLevelsRaw = await Task.aggregate([
+      {
+        $group: {
+          _id: "$priority",
+          count: { $sum: 1 },
+        },
+      },
+    ]);
+    const taskPriorityLevels = taskPriorities.reduce((acc, priority) => {
+      acc[priority] =
+        taskPriorityLevelsRaw.find((item) => item._id === priority)?.count || 0;
+      return acc;
+    }, {});
+    //Fetch recent 10 tasks
+    const recentTasks = await Task.find()
+      .sort({ createdAt: -1 })
+      .limit(10)
+      .select("title status priority dueDate createdAt");
+
+    res.status(200).json({
+      statistics: {
+        totalTask,
+        pendingTasks,
+        completedTasks,
+        overdueTasks,
+      },
+      charts: {
+        taskDistribution,
+        taskPriorityLevels,
+      },
+      recentTasks,
+    });
   } catch (error) {
     res.status(500).json({ message: "Server error", error: error.message });
   }
