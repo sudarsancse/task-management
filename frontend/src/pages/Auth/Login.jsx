@@ -3,6 +3,7 @@ import AuthLayout from "../../components/layouts/AuthLayout";
 import { Link, useNavigate } from "react-router-dom";
 import Input from "../../components/inputs/Input";
 import { validateEmail } from "../../utils/helper";
+import { BASE_URL, API_PATH } from "../../utils/apiPath";
 
 function Login() {
   const [email, setEmail] = useState("");
@@ -28,6 +29,8 @@ function Login() {
     setError("");
 
     //Login API call
+    try {
+    } catch (error) {}
   };
 
   return (
