@@ -1,9 +1,13 @@
-import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import React, { useState, useContext } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import AuthLayout from "../../components/layouts/AuthLayout";
 import { validateEmail } from "../../utils/helper";
 import ProfilePhotoSelector from "../../components/inputs/ProfilePhotoSelector";
 import Input from "../../components/inputs/Input";
+import { API_PATH } from "../../utils/apiPath";
+import axiosInstance from "../../utils/axiosInstance";
+import { UserContext } from "../../context/userContex";
+import uploadImage from "../../utils/uplodeImage";
 
 function Signup() {
   const [profilePic, setProfilePic] = useState(null);
@@ -14,9 +18,14 @@ function Signup() {
 
   const [error, setError] = useState(null);
 
+  const { updateUser } = useContext(UserContext);
+  const navigate = useNavigate();
+
   // Handel Signup form submit
   const handelSignup = async (e) => {
     e.preventDefault();
+
+    let profileImageUrl = "";
 
     if (!fullName) {
       setError("Please enter a Full name.");
@@ -36,6 +45,40 @@ function Signup() {
     setError("");
 
     //Signup API call
+    try {
+      // Uplode image if present
+      if (profilePic) {
+        const imgUploadRes = await uploadImage(profilePic);
+        profileImageUrl = imgUploadRes.imageUrl || "";
+      }
+
+      const res = await axiosInstance.post(API_PATH.AUTH.REGISTER, {
+        name: fullName,
+        email,
+        password,
+        profileImageUrl,
+        adminInviteToken,
+      });
+
+      const { token, role } = res.data;
+      if (token) {
+        localStorage.setItem("token", token);
+        updateUser(res.data);
+
+        // Redirecting based on role
+        if (role === "admin") {
+          navigate("/admin/dashboard");
+        } else {
+          navigate("/user/dashboard");
+        }
+      }
+    } catch (error) {
+      if (error.res && error.res.data.message) {
+        setError(error.res.data.message);
+      } else {
+        setError("Something went worng. Please try again");
+      }
+    }
   };
   return (
     <AuthLayout>

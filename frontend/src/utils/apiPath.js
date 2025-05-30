@@ -33,4 +33,8 @@ export const API_PATH = {
     EXPORT_TASKS: "/api/reports/export/tasks", // GET all Task Report Data in PDF form (Admin only)
     EXPORT_USERS: "/api/reports/export/users", // GET all Users Report Data in PDF form (Admin only)
   },
+
+  IMAGE: {
+    UPLOADE_IMAGE: "/api/auth/upload-image",
+  },
 };
