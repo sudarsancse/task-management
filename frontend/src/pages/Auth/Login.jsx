@@ -1,15 +1,18 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import AuthLayout from "../../components/layouts/AuthLayout";
 import { Link, useNavigate } from "react-router-dom";
 import Input from "../../components/inputs/Input";
 import { validateEmail } from "../../utils/helper";
 import { API_PATH } from "../../utils/apiPath";
 import axiosInstance from "../../utils/axiosInstance";
+import { UserContext } from "../../context/userContex";
 
 function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState(null);
+
+  const { updateUser } = useContext(UserContext);
 
   const navigate = useNavigate();
 
@@ -39,6 +42,7 @@ function Login() {
       const { token, role } = res.data;
       if (token) {
         localStorage.setItem("token", token);
+        updateUser(res.data);
 
         // Redirecting based on role
         if (role === "admin") {
