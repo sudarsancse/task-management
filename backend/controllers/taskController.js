@@ -11,7 +11,7 @@ export const getDashboardData = async (req, res) => {
     const completedTasks = await Task.countDocuments({ status: "Completed" });
     const overdueTasks = await Task.countDocuments({
       status: { $ne: "Completed" },
-      deuDate: { $lt: new Date() },
+      dueDate: { $lt: new Date() },
     });
 
     // Ensure  all possible statuses are include
