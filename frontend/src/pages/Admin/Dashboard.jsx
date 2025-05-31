@@ -8,6 +8,8 @@ import { API_PATH } from "../../utils/apiPath";
 import moment from "moment";
 import InfoCard from "../../components/Cards/InfoCard";
 import { addThousandsSeparator } from "../../utils/helper";
+import { LuArrowRight } from "react-icons/lu";
+import TaskListTable from "../../components/layouts/TaskListTable";
 
 function Dashboard() {
   useUserAuth();
@@ -30,6 +32,10 @@ function Dashboard() {
     } catch (error) {
       console.error("Error fetching users: ", error);
     }
+  };
+
+  const onSeeMore = () => {
+    navigate("/admin/tasks");
   };
 
   useEffect(() => {
@@ -85,6 +91,21 @@ function Dashboard() {
             )}
             color=" bg-lime-500"
           />
+        </div>
+      </div>
+
+      <div className=" grid grid-cols-1 md:grid-cols-2 gap-6 md:my-6">
+        <div className=" md:col-span-2">
+          <div className="card">
+            <dic className=" flex items-center justify-between">
+              <h5 className=" text-lg">Recent Task</h5>
+
+              <button className="card-btn " onClick={onSeeMore}>
+                See All <LuArrowRight className=" text-base" />
+              </button>
+            </dic>
+            <TaskListTable tableData={dashboardData?.recentTasks || []} />
+          </div>
         </div>
       </div>
     </DashboardLayout>
