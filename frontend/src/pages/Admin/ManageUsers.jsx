@@ -1,7 +1,12 @@
 import React from "react";
+import DashboardLayout from "../../components/layouts/DashboardLayout";
 
 function ManageUsers() {
-  return <div>ManageUsers</div>;
+  return (
+    <DashboardLayout activeMenu="Create Task">
+      <div>ManageUsers</div>
+    </DashboardLayout>
+  );
 }
 
 export default ManageUsers;
