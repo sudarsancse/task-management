@@ -52,7 +52,30 @@ function CreateTask() {
   };
 
   //Create Task
-  const createTask = async () => {};
+  const createTask = async () => {
+    setLoading(true);
+
+    try {
+      const todolist = taskData.todoChecklist?.map((item) => ({
+        text: item,
+        completed: false,
+      }));
+
+      const res = await axiosInstance.post(API_PATH.TASKS.CREATE_TASK, {
+        ...taskData,
+        deuDate: new Date(taskData.deuDate).toISOString(),
+        todoChecklist: todolist,
+      });
+
+      toast.success("Task Created Successfully");
+      clearData();
+    } catch (error) {
+      console.error("Error creating Task", error);
+      setLoading(false);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   //Update Task
   const updateTask = async () => {};
@@ -158,7 +181,7 @@ function CreateTask() {
                 <SelectDropdown
                   options={PRIORITY_DATA}
                   value={taskData.priority}
-                  onChange={({ value }) => handelValueChange("priority", value)}
+                  onChange={(value) => handelValueChange("priority", value)}
                   placeholder="Select Priority"
                 />
               </div>
